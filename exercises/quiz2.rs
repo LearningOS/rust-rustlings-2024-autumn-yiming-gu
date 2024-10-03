@@ -46,7 +46,7 @@ mod my_module {
                 },
                 Command::Append(usize) => {
                     new_string = string.clone();
-                    for _i in 0..*usize {
+                    for _ in 0..*usize {
                         new_string.push_str("bar");
                     }
                     output.push(new_string);
