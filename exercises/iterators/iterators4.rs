@@ -3,9 +3,37 @@
 // Execute `rustlings hint iterators4` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
 
-pub fn factorial(num: u64) -> u64 {
+struct Fac {
+    num: i64,
+    fac: i64,
+}
+
+impl Fac {
+    fn new(n: i64) -> Fac {
+        Fac{num: n, fac: 1}
+    }
+}
+
+impl Iterator for Fac {
+    type Item = i64;
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.num == 0 {
+            self.num -= 1;
+            return Some(self.fac);
+        }
+        self.fac *= self.num;
+        self.num -= 1;
+        if self.num >= 0 {
+            Some(self.fac)
+        }
+        else {
+            None
+        }
+    }
+}
+
+pub fn factorial(num: i64) -> i64 {
     // Complete this function to return the factorial of num
     // Do not use:
     // - return
@@ -15,6 +43,7 @@ pub fn factorial(num: u64) -> u64 {
     // For an extra challenge, don't use:
     // - recursion
     // Execute `rustlings hint iterators4` for hints.
+    Fac::new(num).last().unwrap()
 }
 
 #[cfg(test)]
