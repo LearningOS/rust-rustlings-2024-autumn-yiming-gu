@@ -2,7 +2,6 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
@@ -29,13 +28,13 @@ struct LinkedList<T> {
     end: Option<NonNull<Node<T>>>,
 }
 
-impl<T> Default for LinkedList<T> {
+impl<T: std::cmp::PartialOrd + Clone> Default for LinkedList<T> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<T> LinkedList<T> {
+impl<T: std::cmp::PartialOrd + Clone> LinkedList<T> {
     pub fn new() -> Self {
         Self {
             length: 0,
@@ -69,15 +68,48 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
-	{
-		//TODO
-		Self {
+
+    pub fn merge(mut list_a: LinkedList<T>, mut list_b: LinkedList<T>) -> Self {
+        //TODO
+        let mut list_m = Self {
             length: 0,
             start: None,
             end: None,
+        };
+        let mut index_a = 0;
+        let mut index_b = 0;
+        let mut node_a = list_a.get(index_a);
+        let mut node_b = list_b.get(index_b);
+
+        while node_a.is_some() || node_b.is_some() {
+            match node_a {
+                None => match node_b {
+                    None => break,
+                    Some(val_b) => {
+                        list_m.add(val_b.clone());
+                        index_b += 1;
+                    },
+                },
+                Some(val_a) => match node_b {
+                    None => {
+                        list_m.add(val_a.clone());
+                        index_a += 1;
+                    }
+                    Some(val_b) => list_m.add(
+                        if *val_a >= *val_b {
+                            index_b += 1; val_b.clone()
+                        }
+                        else {
+                            index_a += 1; val_a.clone()
+                        }
+                    ),
+                }
+            }
+            node_a = list_a.get(index_a);
+            node_b = list_b.get(index_b);
         }
-	}
+        list_m
+    }
 }
 
 impl<T> Display for LinkedList<T>
@@ -135,7 +167,7 @@ mod tests {
 		let vec_a = vec![1,3,5,7];
 		let vec_b = vec![2,4,6,8];
 		let target_vec = vec![1,2,3,4,5,6,7,8];
-		
+
 		for i in 0..vec_a.len(){
 			list_a.add(vec_a[i]);
 		}

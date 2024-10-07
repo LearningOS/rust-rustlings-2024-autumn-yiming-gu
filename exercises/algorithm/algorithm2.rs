@@ -72,9 +72,11 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn reverse(&mut self){
-		// TODO
-	}
+
+    pub fn reverse(&mut self) {
+        // TODO
+       
+    }
 }
 
 impl<T> Display for LinkedList<T>
