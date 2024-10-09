@@ -2,14 +2,13 @@
 	heap
 	This question requires you to implement a binary heap function
 */
-// I AM NOT DONE
 
 use std::cmp::Ord;
 use std::default::Default;
 
 pub struct Heap<T>
 where
-    T: Default + Copy + std::fmt::Display,
+    T: Default + Copy + std::fmt::Display + std::cmp::PartialOrd,
 {
     count: usize,
     iter_count: usize,
@@ -19,7 +18,7 @@ where
 
 impl<T> Heap<T>
 where
-    T: Default + Copy + std::fmt::Display,
+    T: Default + Copy + std::fmt::Display + std::cmp::PartialOrd,
 {
     pub fn new(comparator: fn(&T, &T) -> bool) -> Self {
         Self {
@@ -51,8 +50,15 @@ where
         while (self.comparator)(&value, &self.items[parent_idx]) {
             self.items.swap(idx, parent_idx);
             idx = parent_idx;
+            let left = self.left_child_idx(idx);
+            let right = self.right_child_idx(idx);
+            if (left <= self.count && right <= self.count) {
+                if !(self.comparator)(&self.items[left], &self.items[right]) {
+                    self.items.swap(left, right);
+                }
+            }
             parent_idx = self.parent_idx(idx);
-            self.iter_count = 0;
+            self.iter_count = idx;
         }
         self.count += 1;
     }
@@ -75,13 +81,18 @@ where
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
         //TODO
-
+        if self.items[self.left_child_idx(idx)] > self.items[self.right_child_idx(idx)] {
+            self.right_child_idx(idx)
+        }
+        else {
+            self.left_child_idx(idx)
+        }
     }
 }
 
 impl<T> Heap<T>
 where
-    T: Default + Ord + Copy + std::fmt::Display,
+    T: Default + Ord + Copy + std::fmt::Display + std::cmp::PartialOrd,
 {
     /// Create a new MinHeap
     pub fn new_min() -> Self {
@@ -96,7 +107,7 @@ where
 
 impl<T> Iterator for Heap<T>
 where
-    T: Default + Copy + std::fmt::Display,
+    T: Default + Copy + std::fmt::Display + std::cmp::PartialOrd,
 {
     type Item = T;
 
@@ -108,7 +119,6 @@ where
         else {
             let iter_count = self.iter_count;
             self.iter_count += 1;
-            println!("{}, {}", iter_count, self.items[iter_count]);
             Some(self.items[iter_count])
         }
     }
@@ -120,7 +130,7 @@ impl MinHeap {
     #[allow(clippy::new_ret_no_self)]
     pub fn new<T>() -> Heap<T>
     where
-        T: Default + Ord + Copy + std::fmt::Display,
+        T: Default + Ord + Copy + std::fmt::Display + std::cmp::PartialOrd,
     {
         Heap::new(|a, b| a < b)
     }
@@ -132,7 +142,7 @@ impl MaxHeap {
     #[allow(clippy::new_ret_no_self)]
     pub fn new<T>() -> Heap<T>
     where
-        T: Default + Ord + Copy + std::fmt::Display,
+        T: Default + Ord + Copy + std::fmt::Display + std::cmp::PartialOrd,
     {
         Heap::new(|a, b| a > b)
     }
