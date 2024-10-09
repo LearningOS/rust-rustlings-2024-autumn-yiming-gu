@@ -2,7 +2,6 @@
 	queue
 	This question requires you to use queues to implement the functionality of the stac
 */
-// I AM NOT DONE
 
 #[derive(Debug)]
 pub struct Queue<T> {
@@ -56,33 +55,72 @@ pub struct myStack<T>
 {
 	//TODO
 	q1:Queue<T>,
-	q2:Queue<T>
+	q2:Queue<T>,
+    index_q:u8
 }
 impl<T> myStack<T> {
     pub fn new() -> Self {
         Self {
 			//TODO
 			q1:Queue::<T>::new(),
-			q2:Queue::<T>::new()
+			q2:Queue::<T>::new(),
+            index_q:0
         }
     }
     pub fn push(&mut self, elem: T) {
         //TODO
+        if self.index_q == 0 {
+            self.q1.enqueue(elem);
+        }
+        else {
+            self.q2.enqueue(elem);
+        }
     }
-    pub fn pop(&mut self) -> Result<T, &str> {
+    pub fn pop(&mut self) ->  Result<T, &str> {
         //TODO
-		Err("Stack is empty")
+        if self.index_q == 0 {
+            let len = self.q1.size();
+            if len == 0 {
+                return Err("Stack is empty");
+            }
+            else if len == 1 {
+                return Ok(self.q1.dequeue().unwrap());
+            }
+            else {
+                for _ in 0..len-1 {
+                    self.q2.enqueue(self.q1.dequeue().unwrap());
+                }
+                self.index_q = 1;
+                return Ok(self.q1.dequeue().unwrap());
+            }
+        }
+        else {
+            let len = self.q2.size();
+            if len == 0 {
+                return Err("Stack is empty");
+            }
+            else if len == 1 {
+                return Ok(self.q2.dequeue().unwrap());
+            }
+            else {
+                for _ in 0..len-1 {
+                    self.q1.enqueue(self.q2.dequeue().unwrap());
+                }
+                self.index_q = 0;
+                return Ok(self.q2.dequeue().unwrap());
+            }
+        }
     }
     pub fn is_empty(&self) -> bool {
 		//TODO
-        true
+        self.q1.is_empty() && self.q2.is_empty()
     }
 }
 
 #[cfg(test)]
 mod tests {
 	use super::*;
-	
+
 	#[test]
 	fn test_queue(){
 		let mut s = myStack::<i32>::new();
