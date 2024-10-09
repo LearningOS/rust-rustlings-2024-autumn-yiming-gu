@@ -9,20 +9,22 @@ use std::default::Default;
 
 pub struct Heap<T>
 where
-    T: Default + Copy,
+    T: Default + Copy + std::fmt::Display,
 {
     count: usize,
+    iter_count: usize,
     items: Vec<T>,
     comparator: fn(&T, &T) -> bool,
 }
 
 impl<T> Heap<T>
 where
-    T: Default + Copy,
+    T: Default + Copy + std::fmt::Display,
 {
     pub fn new(comparator: fn(&T, &T) -> bool) -> Self {
         Self {
             count: 0,
+            iter_count: 0,
             items: vec![T::default()],
             comparator,
         }
@@ -38,6 +40,11 @@ where
 
     pub fn add(&mut self, value: T) {
         //TODO
+        if self.count == 0 {
+            self.items[0] = value;
+            self.count += 1;
+            return;
+        }
         let mut idx = self.count;
         let mut parent_idx = self.parent_idx(idx);
         self.items.push(value);
@@ -45,6 +52,7 @@ where
             self.items.swap(idx, parent_idx);
             idx = parent_idx;
             parent_idx = self.parent_idx(idx);
+            self.iter_count = 0;
         }
         self.count += 1;
     }
@@ -67,13 +75,13 @@ where
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
         //TODO
-		0
+
     }
 }
 
 impl<T> Heap<T>
 where
-    T: Default + Ord + Copy,
+    T: Default + Ord + Copy + std::fmt::Display,
 {
     /// Create a new MinHeap
     pub fn new_min() -> Self {
@@ -88,13 +96,21 @@ where
 
 impl<T> Iterator for Heap<T>
 where
-    T: Default + Copy,
+    T: Default + Copy + std::fmt::Display,
 {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
         //TODO
-		None
+        if self.count == 0 {
+            None
+        }
+        else {
+            let iter_count = self.iter_count;
+            self.iter_count += 1;
+            println!("{}, {}", iter_count, self.items[iter_count]);
+            Some(self.items[iter_count])
+        }
     }
 }
 
@@ -104,7 +120,7 @@ impl MinHeap {
     #[allow(clippy::new_ret_no_self)]
     pub fn new<T>() -> Heap<T>
     where
-        T: Default + Ord + Copy,
+        T: Default + Ord + Copy + std::fmt::Display,
     {
         Heap::new(|a, b| a < b)
     }
@@ -116,7 +132,7 @@ impl MaxHeap {
     #[allow(clippy::new_ret_no_self)]
     pub fn new<T>() -> Heap<T>
     where
-        T: Default + Ord + Copy,
+        T: Default + Ord + Copy + std::fmt::Display,
     {
         Heap::new(|a, b| a > b)
     }
